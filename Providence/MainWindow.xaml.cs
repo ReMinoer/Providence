@@ -19,10 +19,9 @@ namespace Providence
             _keyboardEvents.KeyDown += KeyboardEventsOnKeyDown;
             _keyboardEvents.KeyUp += KeyboardEventsOnKeyUp;
 
-            TextBox.Focus();
-            TextBox.SelectAll();
-
             Left = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Left + (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - Width) / 2;
+
+            Hide();
         }
 
         private void ShowBar()
