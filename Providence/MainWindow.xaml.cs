@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Input;
 using Gma.System.MouseKeyHook;
@@ -30,6 +32,7 @@ namespace Providence
             TextBox.SelectAll();
 
             Show();
+            Activate();
         }
 
         private void TextBox_OnKeyDown(object sender, KeyEventArgs e)

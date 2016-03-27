@@ -11,8 +11,9 @@
         Width="900"
         Background="Transparent"
         AllowsTransparency="True"
-        ShowInTaskbar="False">
-    
+        ShowInTaskbar="False"
+        >
+
     <Window.Style>
         <Style>
             <Style.Triggers>
@@ -36,9 +37,6 @@
         </Style>
     </Window.Style>
 
-    <Window.Triggers>
-    </Window.Triggers>
-
     <Window.Resources>
         <BitmapImage x:Key="ProvidenceIcon" UriSource="Resources/providence.ico" />
     </Window.Resources>
@@ -53,9 +51,9 @@
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
         
-        <Border Width="800" Height="70" BorderBrush="LightGray" BorderThickness="1" CornerRadius="20" Background="WhiteSmoke" Margin="0 -30 0 0">
+        <Border Width="800" Height="70" BorderBrush="LightGray" BorderThickness="1" CornerRadius="20" Background="WhiteSmoke" Margin="0 -30 0 0" Opacity="0.75">
             <Border.Effect>
-                <DropShadowEffect Color="Black" ShadowDepth="2" Direction="270" BlurRadius="10"/>
+                <DropShadowEffect Color="GhostWhite" ShadowDepth="2" Direction="270" BlurRadius="10"/>
             </Border.Effect>
             <Grid Height="50" Margin="0 20 0 0">
                 <Grid.ColumnDefinitions>
@@ -64,7 +62,9 @@
                     <ColumnDefinition Width="50"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Image Source="{StaticResource ProvidenceIcon}" Margin="10"></Image>
+                <Grid Grid.Column="0">
+                    <Image Source="{StaticResource ProvidenceIcon}" Margin="10"></Image>
+                </Grid>
                 
                 <TextBox Grid.Column="1"
                          Name="TextBox"
@@ -76,7 +76,14 @@
                          VerticalContentAlignment="Center"
                          BorderBrush="Transparent"
                          KeyDown="TextBox_OnKeyDown"
-                         MouseDown="TextBox_OnMouseDown" />
+                         MouseDown="TextBox_OnMouseDown"
+                         FontFamily="Consolas"
+                         FontStyle="Oblique"
+                />
+
+                <Grid Grid.Column="2">
+                </Grid>
+                
             </Grid>
         </Border>
     </Grid>
