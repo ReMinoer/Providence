@@ -46,11 +46,11 @@ namespace Providence
 
         private void ShowBar()
         {
-            SearchBox.Focus();
-            SearchBox.SelectAll();
-
             Show();
             Activate();
+
+            SearchBox.Focus();
+            SearchBox.SelectAll();
         }
 
         private void SearchBox_OnMouseDown(object sender, MouseButtonEventArgs e)
