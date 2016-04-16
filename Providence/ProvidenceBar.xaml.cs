@@ -69,6 +69,7 @@ namespace Providence
             {
                 SuggestionListView.ItemsSource = suggestions;
                 SuggestionListView.Visibility = suggestions.Any() ? Visibility.Visible : Visibility.Collapsed;
+                SuggestionListView.SelectedIndex = 0;
             }
 
             SelectedCommand = suggestions.Any() ? suggestions[0] : null;
