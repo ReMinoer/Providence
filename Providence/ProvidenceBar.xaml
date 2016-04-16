@@ -1,4 +1,4 @@
-﻿<Window x:Class="Providence.MainWindow"
+﻿<Window x:Class="Providence.ProvidenceBar"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:Providence"
@@ -12,6 +12,7 @@
         Background="Transparent"
         AllowsTransparency="True"
         ShowInTaskbar="False"
+        KeyDown="Window_OnKeyDown"
         >
 
     <Window.Style>
@@ -41,7 +42,11 @@
         <BitmapImage x:Key="ProvidenceIcon" UriSource="Resources/providence.ico" />
     </Window.Resources>
 
-    <Grid Height="60" Background="Transparent">
+    <Grid Background="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
 
         <tb:TaskbarIcon IconSource="{StaticResource ProvidenceIcon}" ToolTipText="Providence">
             <tb:TaskbarIcon.ContextMenu>
@@ -51,7 +56,7 @@
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
         
-        <Border Width="800" Height="70" BorderBrush="LightGray" BorderThickness="1" CornerRadius="20" Background="WhiteSmoke" Margin="0 -30 0 0" Opacity="0.75">
+        <Border Grid.Row="0" Width="800" Height="70" BorderBrush="LightGray" BorderThickness="1" CornerRadius="20" Background="WhiteSmoke" Margin="0 -20 0 0" Opacity="0.75">
             <Border.Effect>
                 <DropShadowEffect Color="GhostWhite" ShadowDepth="2" Direction="270" BlurRadius="10"/>
             </Border.Effect>
@@ -62,29 +67,44 @@
                     <ColumnDefinition Width="50"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <Grid Grid.Column="0">
+                <Grid Grid.Row="0" Grid.Column="0">
                     <Image Source="{StaticResource ProvidenceIcon}" Margin="10"></Image>
                 </Grid>
-                
-                <TextBox Grid.Column="1"
-                         Name="TextBox"
-                         Text="Write your command here..."
-                         FontSize="16"
-                         Background="Transparent"
-                         HorizontalAlignment="Stretch"
-                         VerticalAlignment="Stretch" 
-                         VerticalContentAlignment="Center"
-                         BorderBrush="Transparent"
-                         KeyDown="TextBox_OnKeyDown"
-                         MouseDown="TextBox_OnMouseDown"
-                         FontFamily="Consolas"
-                         FontStyle="Oblique"
-                />
 
-                <Grid Grid.Column="2">
+                <TextBox Grid.Row="0" Grid.Column="1"
+                                  x:Name="SearchBox"
+                                    Text="Begin to type..."
+                                    FontFamily="Open Sans"
+                                    FontSize="16"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    HorizontalAlignment="Stretch"
+                                    VerticalAlignment="Stretch" 
+                                    VerticalContentAlignment="Center"
+                                    MouseDown="SearchBox_OnMouseDown"
+                                    TextChanged="SearchBox_OnTextChanged"
+                         >
+                </TextBox>
+
+                <Grid Grid.Row="0" Grid.Column="2">
                 </Grid>
-                
+
             </Grid>
+        </Border>
+
+        <Border Grid.Row="1" Width="740" BorderBrush="LightGray" BorderThickness="1 0 1 1" Background="WhiteSmoke" Opacity="0.75">
+            <Border.Effect>
+                <DropShadowEffect Color="GhostWhite" ShadowDepth="2" Direction="270" BlurRadius="10"/>
+            </Border.Effect>
+            <ListView x:Name="SuggestionListView" Background="Transparent">
+                <ListView.ItemTemplate>
+                    <DataTemplate DataType="local:IProvidenceCommand">
+                        <Grid>
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Border>
     </Grid>
     

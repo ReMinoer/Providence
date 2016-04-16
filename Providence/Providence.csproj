@@ -60,7 +60,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="MainWindow.xaml">
+    <Page Include="ProvidenceBar.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -68,8 +68,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="CommandProvider.cs" />
+    <Compile Include="CommandRegistry.cs" />
+    <Compile Include="IProvidenceCommand.cs" />
+    <Compile Include="ISuggestionProvider.cs" />
+    <Compile Include="TestCommand.cs" />
+    <Compile Include="ProvidenceBar.xaml.cs">
+      <DependentUpon>ProvidenceBar.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
