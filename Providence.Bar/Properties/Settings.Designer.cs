@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Providence.Properties
+namespace Providence.Bar.Properties
 {
 
 

@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Providence
+namespace Providence.Bar
 {
     public partial class App : Application
     {

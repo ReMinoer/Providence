@@ -6,7 +6,7 @@ using System.Windows.Input;
 using Gma.System.MouseKeyHook;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
-namespace Providence
+namespace Providence.Bar
 {
     public partial class ProvidenceBar
     {
