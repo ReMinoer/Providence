@@ -33,6 +33,8 @@ namespace Providence.Bar
             _keyboardEvents.KeyUp += KeyboardEventsOnKeyUp;
 
             _commandRegistry = new CommandRegistry();
+            _commandRegistry.Load();
+
             _commandProvider = new CommandProvider(_commandRegistry);
 
             InitializeComponent();
