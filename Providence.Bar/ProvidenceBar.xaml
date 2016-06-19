@@ -4,6 +4,8 @@
         xmlns:local="clr-namespace:Providence.Bar"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:providence="clr-namespace:Providence;assembly=Providence"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
         Topmost="True"
         WindowStyle="None"
         SizeToContent="Height"
@@ -13,37 +15,21 @@
         Background="Transparent"
         AllowsTransparency="True"
         ShowInTaskbar="False"
-        KeyDown="Window_OnKeyDown"
-        >
-
-    <Window.Style>
-        <Style>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding Visibility, RelativeSource={RelativeSource Self}}" Value="Visible">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Top" From="-60" To="0" Duration="0:0:0.300" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Top" From="0" To="-60" Duration="0" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </Window.Style>
+        KeyDown="Window_OnKeyDown">
 
     <Window.Resources>
         <BitmapImage x:Key="ProvidenceIcon" UriSource="Resources/providence.ico" />
+        <Storyboard x:Key="VisibilityStoryboard">
+            <DoubleAnimation Name="TopPropertyAnimation" Storyboard.TargetProperty="Top" />
+        </Storyboard>
     </Window.Resources>
 
     <Grid Background="Transparent">
+
+        <Grid.Resources>
+            <BitmapImage x:Key="ProvidenceIcon" UriSource="Resources/providence.ico" />
+        </Grid.Resources>
+        
         <Grid.RowDefinitions>
             <RowDefinition Height="50"></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
@@ -57,11 +43,11 @@
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
         
-        <Border Grid.Row="0" Width="800" Height="70" BorderBrush="LightGray" BorderThickness="1" CornerRadius="20" Background="WhiteSmoke" Margin="0 -20 0 0" Opacity="0.75">
+        <Border Grid.Row="0" Width="800" Height="50" BorderBrush="LightGray" BorderThickness="1 0 1 1" CornerRadius="0 0 20 20" Background="WhiteSmoke" Margin="0 0 0 0" Opacity="0.75">
             <Border.Effect>
                 <DropShadowEffect Color="GhostWhite" ShadowDepth="2" Direction="270" BlurRadius="10"/>
             </Border.Effect>
-            <Grid Height="50" Margin="0 20 0 0">
+            <Grid Height="50" Margin="0 0 0 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="50"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
@@ -84,6 +70,7 @@
                                     VerticalContentAlignment="Center"
                                     MouseDown="SearchBox_OnMouseDown"
                                     TextChanged="SearchBox_OnTextChanged"
+                                    PreviewKeyDown="SearchBox_OnPreviewKeyDown"
                          >
                 </TextBox>
 
@@ -93,19 +80,52 @@
             </Grid>
         </Border>
 
-        <Border Grid.Row="1" Width="740" BorderBrush="LightGray" BorderThickness="1 0 1 1" Background="WhiteSmoke" Opacity="0.75">
+        <Border Grid.Row="1" Width="740" BorderBrush="Gray" Background="WhiteSmoke" Opacity="0.75" Margin="0 0 0 10" BorderThickness="1 0 1 1" CornerRadius="0 0 20 20">
             <Border.Effect>
                 <DropShadowEffect Color="GhostWhite" ShadowDepth="2" Direction="270" BlurRadius="10"/>
             </Border.Effect>
-            <ListView x:Name="SuggestionListView" Background="Transparent">
-                <ListView.ItemTemplate>
-                    <DataTemplate DataType="providence:IProvidenceCommand">
-                        <Grid>
-                            <TextBlock Text="{Binding DisplayName}" />
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <ListView x:Name="SuggestionListView" Background="WhiteSmoke" Opacity="0.75" BorderThickness="0">
+                    <ListView.ItemTemplate>
+                        <DataTemplate DataType="providence:ISuggestable">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20"></ColumnDefinition>
+                                    <ColumnDefinition Width="*"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{Binding IconSource, Mode=OneWay}" DockPanel.Dock="Left"/>
+                                <DockPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Category, Mode=OneWay}" DockPanel.Dock="Right"/>
+                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                </DockPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+                <Grid Grid.Row="1" Height="12" Margin="10 0 10 0">
+                    <ProgressBar x:Name="ProgressBar"
+                                 BorderThickness="1 0 1 1"
+                                 Value="{Binding Progress.Value, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                 Minimum="{Binding Progress.Minimum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                 Maximum="{Binding Progress.Maximum, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                 IsIndeterminate="{Binding Progress.IsIndeterminate, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                                 />
+                    <TextBlock Text="{Binding Progress.Message, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="10"
+                               />
+                </Grid>
+            </Grid>
         </Border>
     </Grid>
     

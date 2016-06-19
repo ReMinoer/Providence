@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Providence
 {
@@ -15,7 +16,7 @@ namespace Providence
         public IProvidenceCommand[] GetSuggestions(int maxCount)
         {
             if (string.IsNullOrEmpty(SearchText))
-                return new IProvidenceCommand[0];
+                return _commandRegistry.Take(maxCount).ToArray();
 
             var result = new List<IProvidenceCommand>();
 
@@ -42,7 +43,7 @@ namespace Providence
 
             foreach (IProvidenceCommand command in _commandRegistry)
             {
-                if (command.DisplayName.ToLower().Contains(SearchText.ToLower()) && !result.Contains(command))
+                if (command.Name.ToLower().Contains(SearchText.ToLower()) && !result.Contains(command))
                 {
                     result.Add(command);
 

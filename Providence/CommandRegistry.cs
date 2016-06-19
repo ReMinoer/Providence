@@ -11,9 +11,6 @@ namespace Providence
     {
         public CommandRegistry()
         {
-            Add(new TestCommand("First test"));
-            Add(new TestCommand("Second test"));
-            Add(new TestCommand("Third test"));
         }
 
         public void Load()
