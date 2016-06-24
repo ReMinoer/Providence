@@ -1,5 +1,3 @@
-﻿using System;
-
 namespace Providence
 {
     public struct Progress
@@ -11,11 +9,5 @@ namespace Providence
         public bool IsIndeterminate { get; set; }
 
         static public Progress Default => new Progress { Maximum = 1 };
-    }
-
-    public interface IProvidenceCommand : ISuggestable
-    {
-        event Action<Progress> Progressed;
-        void Run();
     }
 }

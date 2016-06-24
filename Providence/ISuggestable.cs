@@ -1,10 +1,14 @@
-﻿namespace Providence
+﻿using System;
+
+namespace Providence
 {
     public interface ISuggestable
     {
-        string Name { get; }
+        string DisplayName { get; }
         string Category { get; }
         string IconSource { get; }
-        char[] Initials { get; }
+        bool HideAfterRun { get; }
+        void Run();
+        event Action<Progress> Progressed;
     }
 }

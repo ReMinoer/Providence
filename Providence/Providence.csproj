@@ -31,14 +31,19 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Attributes\DefaultPrefixAttribute.cs" />
     <Compile Include="Attributes\IconAttribute.cs" />
-    <Compile Include="CommandProvider.cs" />
-    <Compile Include="CommandRegistry.cs" />
-    <Compile Include="IProvidenceCommand.cs" />
+    <Compile Include="ProvidenceProvider.cs" />
+    <Compile Include="ServiceLoader.cs" />
+    <Compile Include="INameableSuggestion.cs" />
     <Compile Include="ISuggestable.cs" />
     <Compile Include="ISuggestionProvider.cs" />
+    <Compile Include="NameableCommand.cs" />
+    <Compile Include="NameableService.cs" />
+    <Compile Include="Progress.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProvidenceCommand.cs" />
+    <Compile Include="ProvidenceService.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

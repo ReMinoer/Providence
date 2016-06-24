@@ -7,14 +7,12 @@ using Microsoft.CSharp;
 
 namespace Providence
 {
-    public class CommandRegistry : List<IProvidenceCommand>
+    static public class ServiceLoader
     {
-        public CommandRegistry()
+        static public IEnumerable<ProvidenceService> Load()
         {
-        }
+            var result = new List<ProvidenceService>();
 
-        public void Load()
-        {
             string myDocumentPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string scriptFolder = Path.Combine(myDocumentPath, "Providence Scripts\\");
 
@@ -40,12 +38,14 @@ namespace Providence
 
                 foreach (Type type in compilerResults.CompiledAssembly.ExportedTypes)
                 {
-                    if (!typeof(IProvidenceCommand).IsAssignableFrom(type))
-                        return;
+                    if (!typeof(ProvidenceService).IsAssignableFrom(type))
+                        continue;
 
-                    Add((IProvidenceCommand)Activator.CreateInstance(type));
+                    result.Add((ProvidenceService)Activator.CreateInstance(type));
                 }
             }
+
+            return result;
         }
     }
 }

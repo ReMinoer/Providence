@@ -1,7 +1,9 @@
-﻿namespace Providence
+﻿using System.Collections.Generic;
+
+namespace Providence
 {
-    public interface ISuggestionProvider<out T>
+    public interface ISuggestionProvider
     {
-        T[] GetSuggestions(int maxCount);
+        IEnumerable<ISuggestable> GetSuggestions(string text, int maxCount);
     }
 }

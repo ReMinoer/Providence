@@ -1,27 +1,19 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Linq;
-using Providence.Attributes;
 
 namespace Providence
 {
-    public abstract class ProvidenceCommand : IProvidenceCommand
+    public abstract class ProvidenceCommand : ISuggestable
     {
-        public string Name { get; }
-        public string Category { get; }
-        public string IconSource { get; }
-        public char[] Initials { get; }
-
+        public virtual string DisplayName { get; protected set; }
+        public string IconSource { get; protected set; }
+        public bool HideAfterRun { get; protected set; }
+        public ProvidenceService Service { get; internal set; }
+        public string Category => Service.DisplayName;
         public event Action<Progress> Progressed;
 
         protected ProvidenceCommand()
         {
-            object[] attributes = GetType().GetCustomAttributes(true);
-
-            Name = attributes.OfType<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ?? GetType().Name;
-            Category = attributes.OfType<CategoryAttribute>().FirstOrDefault()?.Category;
-            IconSource = attributes.OfType<IconAttribute>().FirstOrDefault()?.IconSource;
-            Initials = Name?.Trim().ToLower().Split(' ').Select(x => x.First()).ToArray();
+            HideAfterRun = true;
         }
 
         public abstract void Run();

@@ -100,7 +100,7 @@
                                 <Image Source="{Binding IconSource, Mode=OneWay}" DockPanel.Dock="Left"/>
                                 <DockPanel Grid.Column="1">
                                     <TextBlock Text="{Binding Category, Mode=OneWay}" DockPanel.Dock="Right"/>
-                                    <TextBlock Text="{Binding Name, Mode=OneWay}" />
+                                    <TextBlock Text="{Binding DisplayName, Mode=OneWay}" />
                                 </DockPanel>
                             </Grid>
                         </DataTemplate>

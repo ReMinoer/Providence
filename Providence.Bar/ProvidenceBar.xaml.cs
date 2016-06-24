@@ -23,14 +23,14 @@ namespace Providence.Bar
         private const int SuggestionsMax = 5;
         private ProvidenceBarVisibility _visibility;
 
-        private readonly CommandProvider _commandProvider;
+        private readonly ProvidenceProvider _providenceProvider;
         private readonly IKeyboardEvents _keyboardEvents;
         private bool _controlKeyDown;
 
         private Storyboard _visibilityStoryboard;
         private DoubleAnimation _topPropertyAnimation;
 
-        public IProvidenceCommand SelectedCommand => (IProvidenceCommand)SuggestionListView.SelectedItem;
+        public ISuggestable SelectedSuggestion => (ISuggestable)SuggestionListView.SelectedItem;
 
         public Progress Progress
         {
@@ -49,17 +49,20 @@ namespace Providence.Bar
             _keyboardEvents.KeyDown += KeyboardEventsOnKeyDown;
             _keyboardEvents.KeyUp += KeyboardEventsOnKeyUp;
 
-            var commandRegistry = new CommandRegistry();
-            commandRegistry.Load();
+            ProvidenceService[] services = ServiceLoader.Load().ToArray();
+            foreach (ProvidenceService service in services)
+            {
+                service.Initialize();
+                service.InsertPrefixRequested += ServiceOnInsertPrefixRequested;
+            }
 
-            _commandProvider = new CommandProvider(commandRegistry);
+            _providenceProvider = new ProvidenceProvider(services);
 
             InitializeComponent();
 
             Left = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Left + (System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - Width) / 2;
 
             GetSuggestions("");
-
             SetVisibility(ProvidenceBarVisibility.Hide);
         }
 
@@ -71,8 +74,6 @@ namespace Providence.Bar
 
         private void SetVisibility(ProvidenceBarVisibility visibility)
         {
-            _visibility = visibility;
-
             _visibilityStoryboard = (Storyboard)FindResource("VisibilityStoryboard");
             _topPropertyAnimation = (DoubleAnimation)_visibilityStoryboard.Children.First(x => x.Name == "TopPropertyAnimation");
 
@@ -93,26 +94,35 @@ namespace Providence.Bar
                     _visibilityStoryboard.Begin(this);
                     break;
                 case ProvidenceBarVisibility.Visible:
-                    Show();
-                    Activate();
 
-                    SuggestionListView.Visibility = Visibility.Visible;
+                    if (_visibility == ProvidenceBarVisibility.Hide)
+                    {
+                        Show();
+                        Activate();
+
+                        SuggestionListView.Visibility = Visibility.Visible;
+
+                        SearchBox.Focus();
+                    }
+
+                    if (_visibility == ProvidenceBarVisibility.Hide)
+                        SearchBox.SelectAll();
+                    else if (_visibility == ProvidenceBarVisibility.OnlyProgressBar)
+                        SearchBox.CaretIndex = SearchBox.Text.Length;
 
                     _topPropertyAnimation.To = 0;
                     _topPropertyAnimation.Duration = new Duration(TimeSpan.FromSeconds(Math.Abs(0.0 - Top) / topPropertySpeed));
                     _visibilityStoryboard.Begin(this);
 
-                    SearchBox.Focus();
-                    SearchBox.SelectAll();
                     break;
             }
+
+            _visibility = visibility;
         }
 
         private void GetSuggestions(string text)
         {
-            _commandProvider.SearchText = text;
-
-            IProvidenceCommand[] suggestions = _commandProvider.GetSuggestions(SuggestionsMax);
+            ISuggestable[] suggestions = _providenceProvider.GetSuggestions(text, SuggestionsMax).ToArray();
 
             if (SuggestionListView != null)
             {
@@ -133,24 +143,29 @@ namespace Providence.Bar
             GetSuggestions(SearchBox.Text);
         }
 
+        private void ServiceOnInsertPrefixRequested(string prefix)
+        {
+            Application.Current.Dispatcher.Invoke(() => SearchBox.Text = prefix + ' ');
+        }
+
         private async void Window_OnKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
-                if (string.IsNullOrEmpty(SearchBox.Text) && SelectedCommand == null)
+                if (string.IsNullOrEmpty(SearchBox.Text) || SelectedSuggestion == null)
                     return;
 
-                SelectedCommand.Progressed += SelectedCommandOnProgressed;
+                SelectedSuggestion.Progressed += SelectedCommandOnProgressed;
                 SetVisibility(ProvidenceBarVisibility.OnlyProgressBar);
 
-                IProvidenceCommand command = SelectedCommand;
-                await Task.Run(() => command.Run());
+                ISuggestable suggestion = SelectedSuggestion;
+                await Task.Run(() => suggestion.Run());
 
-                SetVisibility(ProvidenceBarVisibility.Hide);
-                SelectedCommand.Progressed -= SelectedCommandOnProgressed;
+                SetVisibility(suggestion.HideAfterRun ? ProvidenceBarVisibility.Hide : ProvidenceBarVisibility.Visible);
+                SelectedSuggestion.Progressed -= SelectedCommandOnProgressed;
             }
             else if (e.Key == Key.Escape)
-                Hide();
+                SetVisibility(ProvidenceBarVisibility.Hide);
         }
 
         private void SelectedCommandOnProgressed(Progress args)
@@ -163,7 +178,7 @@ namespace Providence.Bar
             base.OnDeactivated(e);
 
             if (_visibility != ProvidenceBarVisibility.OnlyProgressBar)
-                Hide();
+                SetVisibility(ProvidenceBarVisibility.Hide);
         }
 
         private void KeyboardEventsOnKeyDown(object sender, System.Windows.Forms.KeyEventArgs keyEventArgs)
